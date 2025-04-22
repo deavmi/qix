@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/qix
+qix.so
+qix.dylib
+qix.dll
+qix.a
+qix.lib
+qix-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
