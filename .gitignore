@@ -14,3 +14,6 @@ qix-test-*
 *.o
 *.obj
 *.lst
+
+# Dub files
+dub.selections.json
