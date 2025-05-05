@@ -2,27 +2,30 @@ module qix.queue;
 
 public alias QueueKey = size_t;
 
-public struct Queue
+public template Queue(Item)
 {
-	private QueueKey _id;
-
-	package this(QueueKey id)
+	public struct Queue
 	{
-		this._id = id;
-	}
+		private QueueKey _id;
 
-	public QueueKey id()
-	{
-		return this._id;
-	}
+		package this(QueueKey id)
+		{
+			this._id = id;
+		}
 
-	public string toString()
-	{
-		import std.string : format;
-		return format
-		(
-			"Queue (qid: %d)",
-			this._id	
-		);
+		public QueueKey id()
+		{
+			return this._id;
+		}
+
+		public string toString()
+		{
+			import std.string : format;
+			return format
+			(
+				"Queue (qid: %d)",
+				this._id	
+			);
+		}
 	}
 }
