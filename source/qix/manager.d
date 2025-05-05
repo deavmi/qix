@@ -97,7 +97,7 @@ public template Manager(Item)
 			else
 			{
 				return ok!(QueueKey, string)(new_qid);
-			}	
+			}
 		}	
 	}
 }
