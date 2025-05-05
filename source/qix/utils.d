@@ -11,7 +11,7 @@ static this()
 	r_tls = rndGen();
 }
 
-public size_t rand()
+package size_t rand()
 {
 	alias r = r_tls;
 	size_t n = r.front();
