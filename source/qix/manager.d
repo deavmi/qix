@@ -98,4 +98,5 @@ unittest
 	auto m = new Manager();
 
 	Result!(Queue*, string) q1_r = m.newQueue();
+	
 }
