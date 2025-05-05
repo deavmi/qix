@@ -1,6 +1,6 @@
 module qix.queue;
 
-package alias QueueKey = size_t;
+public alias QueueKey = size_t;
 
 public struct Queue
 {
@@ -9,6 +9,11 @@ public struct Queue
 	package this(QueueKey id)
 	{
 		this._id = id;
+	}
+
+	public QueueKey id()
+	{
+		return this._id;
 	}
 
 	public string toString()
