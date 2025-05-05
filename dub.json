@@ -10,5 +10,6 @@
 	"description": "Request/response framework",
 	"license": "LGPL-2.0-only",
 	"name": "qix",
-	"targetType": "library"
+	"targetType": "library",
+	"versions": ["DBG_DEBUG_LOGGING", "DBG_VERBOSE_LOGGING"]
 }
