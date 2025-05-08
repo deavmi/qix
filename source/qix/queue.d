@@ -222,6 +222,4 @@ unittest
 	DEBUG("Expected: ", m);
 	DEBUG("Thread got: ", wt.m());
 	assert(m == wt.m());
-
-	Thread.sleep(dur!("seconds")(5));
 }
