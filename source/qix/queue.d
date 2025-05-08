@@ -210,11 +210,18 @@ unittest
 	Waiter wt = new Waiter(&q);
 	wt.start();
 
+	// todo: do version with sleep here and version without
+
 	// Push a single message in
 	Message m = new Message("Hey there");
 	q.receive(m);
 
-
+	// wait for thread to end and then grab the internal
+	// value for comparison
+	wt.join();
+	DEBUG("Expected: ", m);
+	DEBUG("Thread got: ", wt.m());
+	assert(m == wt.m());
 
 	Thread.sleep(dur!("seconds")(5));
 }
