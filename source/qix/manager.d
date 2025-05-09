@@ -104,12 +104,36 @@ public template Manager(Item)
 
 unittest
 {
-	struct Message{} // item type
+	// item type
+	struct Message
+	{
+		private string _t;
+		this(string t)
+		{
+			this._t = t;
+		}
+
+		public string t()
+		{
+			return this._t;
+		}
+	} 
 	
 	// queue manager for queues that hold messages
 	auto m = new Manager!(Message);
 
 	Result!(Queue!(Message)*, string) q1_r = m.newQueue();
 	Result!(Queue!(Message)*, string) q2_r = m.newQueue();
-	
+
+	assert(q1_r.is_okay());
+	assert(q2_r.is_okay());
+
+	auto q1 = q1_r.ok();
+	auto q2 = q2_r.ok();
+	Message m1_in = Message("First message");
+	Message m2_in = Message("Second message");
+	assert(q1.receive(m1_in)); // should not be rejected
+	assert(q2.receive(m2_in)); // should not be rejected
+	assert(q1.wait() == m1_in); // should be the same message we sent in
+	assert(q2.wait() == m2_in); // should be the same message we sent in
 }

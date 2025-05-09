@@ -222,4 +222,17 @@ unittest
 	DEBUG("Expected: ", m);
 	DEBUG("Thread got: ", wt.m());
 	assert(m == wt.m());
+
+	// wait with timeout and knowing nothing will
+	// be enqueued
+	try
+	{
+		q.wait(dur!("seconds")(1));
+		assert(false);
+	}
+	catch(Exception e)
+	{
+		assert(e.msg == "Timeout after waiting");
+	}
+	
 }
