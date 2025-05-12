@@ -31,19 +31,11 @@ public template Queue(Item)
 			this._l = new Mutex();
 			this._c = new Condition(this._l);
 			this._ap = ap;
-			// show();
 		}
 
 		package this(QueueKey id)
 		{
 			this(id, null);
-		}
-
-		private void show()
-		{
-			DEBUG("this._l", cast(Object*)this._l);
-			DEBUG("this._c", cast(Object*)this._c);
-			DEBUG("this", &this);
 		}
 
 		public QueueKey id()
@@ -86,8 +78,6 @@ public template Queue(Item)
 			DEBUG("calling notify()...");
 			this._c.notify(); // wake up one waiter
 
-			show();
-
 			DEBUG("post-notify");
 			
 			return true;
@@ -100,8 +90,6 @@ public template Queue(Item)
 
 		public Item wait(Duration timeout)
 		{
-			show();
-			
 			this._l.lock();
 
 			scope(exit)
