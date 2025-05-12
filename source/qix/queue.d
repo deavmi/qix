@@ -8,8 +8,11 @@ import std.datetime : Duration;
 
 import gogga.mixins;
 
+public alias AdmitPolicy(Item) = bool delegate(Item);
+
 public template Queue(Item)
 {
+	private alias AP = AdmitPolicy!(Item);
 	public struct Queue
 	{
 		private QueueKey _id;
@@ -20,14 +23,20 @@ public template Queue(Item)
 		import std.range : walkLength;
 		private SList!(Item) _q;
 		// todo: list here
-		// todo: filter delegate to use on reception
+		private AP _ap; // admit policy
 
-		package this(QueueKey id)
+		package this(QueueKey id, AP ap)
 		{
 			this._id = id;
 			this._l = new Mutex();
 			this._c = new Condition(this._l);
+			this._ap = ap;
 			// show();
+		}
+
+		package this(QueueKey id)
+		{
+			this(id, null);
 		}
 
 		private void show()
@@ -42,6 +51,20 @@ public template Queue(Item)
 			return this._id;
 		}
 
+		private bool wouldAdmit(Item i)
+		{
+			// if no policy => true
+			if(this._ap is null)
+			{
+				return true;
+			}
+			// else, apply policy
+			else
+			{
+				return this._ap(i);
+			}
+		}
+
 		public bool receive(Item i)
 		{
 			// lock, apply filter delegate (if any), insert (if so), unlock
@@ -50,6 +73,12 @@ public template Queue(Item)
 			scope(exit)
 			{
 				this._l.unlock();
+			}
+
+			if(!wouldAdmit(i))
+			{
+				DEBUG("Admit policy denied: '", i, "'");
+				return false;
 			}
 
 			// todo: filter here (Document: API for filters hold lock?)
@@ -160,7 +189,7 @@ private version(unittest)
 	import core.thread : Thread, dur;
 }
 
-unittest
+private version(unittest)
 {
 	// custom item type
 	class Message
@@ -170,13 +199,16 @@ unittest
 		{
 			this._m = m;
 		}
-
+	
 		public auto m()
 		{
 			return this._m;
 		}
 	}
+}
 
+unittest
+{
 	// create a single queue
 	Queue!(Message) q = Queue!(Message)(1);
 
@@ -235,4 +267,28 @@ unittest
 		assert(e.msg == "Timeout after waiting");
 	}
 	
+}
+
+// test admit policy
+unittest
+{
+	// admit policy that accepts
+	bool accept(Message m) { return true; }
+	AdmitPolicy!(Message) ap_a = &accept;
+	
+	// create a single queue with it
+	Queue!(Message) q1 = Queue!(Message)(1, ap_a);
+
+	// should accept
+	assert(q1.receive(new Message("Hi")));
+
+	// admit policy that rejects
+	bool reject(Message m) { return false; }
+	AdmitPolicy!(Message) ap_r = &reject;
+	
+	// create a single queue with it
+	Queue!(Message) q2 = Queue!(Message)(1, ap_r);
+
+	// should reject
+	assert(!q2.receive(new Message("Hi")));
 }
