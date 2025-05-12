@@ -46,15 +46,10 @@ public template Queue(Item)
 		private bool wouldAdmit(Item i)
 		{
 			// if no policy => true
-			if(this._ap is null)
-			{
-				return true;
-			}
 			// else, apply policy
-			else
-			{
-				return this._ap(i);
-			}
+			bool s = this._ap is null ? true : this._ap(i);
+			DEBUG("Admit policy returned: ", s);
+			return s;
 		}
 
 		public bool receive(Item i)
