@@ -17,3 +17,6 @@ qix-test-*
 
 # Dub files
 dub.selections.json
+
+# Library files
+*.a
