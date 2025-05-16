@@ -4,7 +4,7 @@
 # Qix
 ### Simple waitable-queue management
 
-[![D](https://github.com/deavmi/qix/actions/workflows/d.yml/badge.svg)](https://github.com/deavmi/qix/actions/workflows/d.yml)
+[![D](https://github.com/deavmi/qix/actions/workflows/d.yml/badge.svg)](https://github.com/deavmi/qix/actions/workflows/d.yml) [![Coverage Status](https://coveralls.io/repos/github/deavmi/qix/badge.svg?branch=master)](https://coveralls.io/github/deavmi/qix?branch=master)
 
 ---
 
