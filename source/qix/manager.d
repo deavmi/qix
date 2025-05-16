@@ -98,7 +98,32 @@ public template Manager(Item)
 			{
 				return ok!(QueueKey, string)(new_qid);
 			}
-		}	
+		}
+
+		public bool removeQueue(QueueType* queue)
+		{
+			return removeQueue(queue.id());
+		}
+
+		public bool removeQueue(QueueKey key)
+		{
+			this._ql.lock();
+
+			scope(exit)
+			{
+				this._ql.unlock();
+			}
+
+			QueueType* f = key in this._q;
+
+			if(f is null)
+			{
+				return false;
+			}
+
+			this._q.remove(key);
+			return true;
+		}
 	}
 }
 
@@ -122,6 +147,10 @@ unittest
 	// queue manager for queues that hold messages
 	auto m = new Manager!(Message);
 
+	// no queues present
+	assert(m.removeQueue(0) == false);
+	assert(m.removeQueue(1) == false);
+
 	// create two new queues
 	Result!(Queue!(Message)*, string) q1_r = m.newQueue();
 	Result!(Queue!(Message)*, string) q2_r = m.newQueue();
@@ -140,4 +169,7 @@ unittest
 	assert(q2.receive(m2_in)); // should not be rejected
 	assert(q1.wait() == m1_in); // should be the same message we sent in
 	assert(q2.wait() == m2_in); // should be the same message we sent in
+
+	// handle nulls
+	assert(m.removeQueue(null) == false);
 }
