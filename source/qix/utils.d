@@ -1,3 +1,8 @@
+/**
+ * Helper routines
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
+ */
 module qix.utils;
 
 import std.random : rndGen, Random;
