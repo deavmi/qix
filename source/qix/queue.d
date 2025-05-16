@@ -5,6 +5,10 @@
  */
 module qix.queue;
 
+/**
+ * The type used to represent
+ * a queue id
+ */
 public alias QueueKey = size_t;
 
 import core.sync.mutex : Mutex;
