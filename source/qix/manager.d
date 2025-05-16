@@ -170,6 +170,14 @@ unittest
 	assert(q1.wait() == m1_in); // should be the same message we sent in
 	assert(q2.wait() == m2_in); // should be the same message we sent in
 
-	// handle nulls
+	// remove queues
+	assert(m.removeQueue(q1)); // by QueueType*
+	assert(m.removeQueue(q2.id())); // by id
+
+	// handle nulls for queue removal
 	assert(m.removeQueue(null) == false);
+
+	// no queues present
+	assert(m.removeQueue(0) == false);
+	assert(m.removeQueue(1) == false);
 }
