@@ -51,6 +51,8 @@ assert(q1.wait() == m1_in); // should be the same message we sent in
 assert(q2.wait() == m2_in); // should be the same message we sent in
 ```
 
+You can also take a look at the [API documentation](https://qix.dpldocs.info/qix.html).
+
 ## License
 
 The license is the [LGPL 2.0](LICENSE) only.
