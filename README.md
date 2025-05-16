@@ -7,4 +7,6 @@
 
 ---
 
-TODO: Add stuff here
+## License
+
+The license is the [LGPL 2.0](LICENSE) only.
