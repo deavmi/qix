@@ -1,13 +1,10 @@
+<img src="branding/logo.png" alt="Qix logo" width="25%"></img>
 
+# Qix
+### Simple waitable-queue management
 
-<center>
-	<img src="branding/logo.png" alt="Qix logo" width="25%"></img>
-</center>
+<p>CI badge here</p><p>DUB badge here</p>
 
-<center>
-	<h1>Qix</h1>
-	<h3>Simple waitable-queue management</h3>
-	<p>CI badge here</p><p>DUB badge here</p>
-</center>
+---
 
-<hr>
+TODO: Add stuff here
