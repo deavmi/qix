@@ -1,7 +1,7 @@
 
 
 <center>
-	<img src="branding/logo.png" alt="Qix logo" width=50%>
+	<img src="branding/logo.png" alt="Qix logo" width=25%>
 </center>
 
 <center>
