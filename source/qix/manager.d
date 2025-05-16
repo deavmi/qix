@@ -1,3 +1,8 @@
+/** 
+ * Queue management
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
+ */
 module qix.manager;
 
 import qix.queue;
@@ -5,13 +10,21 @@ import niknaks.functional : Result, ok, error;
 import std.string : format;
 import gogga.mixins;
 
-
-// max iterations when trying
-// to find an unused queue id
+/** 
+ * Default max iterations when
+ * trying to find an unused queue
+ * id
+ */
 private enum NEWQUEUE_MAX_ITER = 1000;
 
+/** 
+ * A queue manager
+ */
 public template Manager(Item)
 {
+	/** 
+	 * A queue manager
+	 */
 	public class Manager
 	{
 		import core.sync.mutex : Mutex;
@@ -21,14 +34,41 @@ public template Manager(Item)
 		private QueueType[QueueKey] _q;
 		private Mutex _ql; // todo: readers-writers lock
 
-		this()
+		private size_t _mi;
+
+		/** 
+		 * Construct a new queue manager
+		 *
+		 * Params:
+		 *   maxIter = maximum number of
+		 * iterations allowed when searching
+		 * for a free queue id
+		 */
+		this(size_t maxIter)
 		{
 			this._ql = new Mutex();
+			this._mi = maxIter;
 		}
 
-		// result is either pointer to new queue
-		// or... a string containing error as to
-		// why there was a failure
+		/** 
+		 * Constructs a new queue manager
+		 */
+		this()
+		{
+			this(NEWQUEUE_MAX_ITER);
+		}
+
+		/** 
+		 * Finds an unused queue id and then
+		 * instantiates a queue with that id
+		 *
+		 * Returns: a `Result` that contains
+		 * a pointer to the queue if a free
+		 * id was found, otherwise `false`
+		 * if no free id could be found or
+		 * we reached the maximum number
+		 * of allowed iterations for searching
+		 */
 		public Result!(QueueType*, string) newQueue()
 		{
 			this._ql.lock();
@@ -100,11 +140,28 @@ public template Manager(Item)
 			}
 		}
 
+		/** 
+		 * Removes the provided queue from the manager
+		 *
+		 * Params:
+		 *   queue = a pointer to the queue
+		 * Returns: `true` if the queue existed, `false`
+		 * if not or if `null` was provided
+		 */
 		public bool removeQueue(QueueType* queue)
 		{
 			return queue is null ? false : removeQueue(queue.id());
 		}
 
+		/** 
+		 * Removes the queue by the provided id
+		 * from the manager
+		 *
+		 * Params:
+		 *   key = the queue's id
+		 * Returns: `true` if the queue existed, `false`
+		 * otherwise
+		 */
 		public bool removeQueue(QueueKey key)
 		{
 			this._ql.lock();
