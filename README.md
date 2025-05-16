@@ -4,7 +4,7 @@
 # Qix
 ### Simple waitable-queue management
 
-[![D](https://github.com/deavmi/qix/actions/workflows/d.yml/badge.svg)](https://github.com/deavmi/qix/actions/workflows/d.yml)![DUB](https://img.shields.io/dub/v/qix?color=%23c10000ff%20&style=flat-square) ![DUB](https://img.shields.io/dub/dt/qix?style=flat-square) ![DUB](https://img.shields.io/dub/l/tristanable?style=flat-square)  [![Coverage Status](https://coveralls.io/repos/github/deavmi/qix/badge.svg?branch=master)](https://coveralls.io/github/deavmi/qix?branch=master)
+[![D](https://github.com/deavmi/qix/actions/workflows/d.yml/badge.svg)](https://github.com/deavmi/qix/actions/workflows/d.yml)![DUB](https://img.shields.io/dub/v/qix?color=%23c10000ff%20&style=flat-square) ![DUB](https://img.shields.io/dub/dt/qix?style=flat-square) ![DUB](https://img.shields.io/dub/l/qix?style=flat-square)  [![Coverage Status](https://coveralls.io/repos/github/deavmi/qix/badge.svg?branch=master)](https://coveralls.io/github/deavmi/qix?branch=master)
 
 ---
 
