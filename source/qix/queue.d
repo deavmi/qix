@@ -61,6 +61,15 @@ public template Queue(Item)
 		// todo: list here
 		private AP _ap; // admit policy
 
+		/** 
+		 * Constructs a new queue with
+		 * the given id and the admittance
+		 * policy
+		 *
+		 * Params:
+		 *   id = the id
+		 *   ap = admittance policy
+		 */
 		package this(QueueKey id, AP ap)
 		{
 			this._id = id;
@@ -69,6 +78,13 @@ public template Queue(Item)
 			this._ap = ap;
 		}
 
+		/** 
+		 * Constructs a new queue with
+		 * the given id
+		 *
+		 * Params:
+		 *   id = the id
+		 */
 		package this(QueueKey id)
 		{
 			this(id, null);
