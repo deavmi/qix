@@ -1,4 +1,5 @@
-<img src="branding/logo.png" alt="Qix logo" width="25%"></img>
+
+![](branding/logo_small.png)
 
 # Qix
 ### Simple waitable-queue management
