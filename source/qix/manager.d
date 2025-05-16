@@ -122,14 +122,18 @@ unittest
 	// queue manager for queues that hold messages
 	auto m = new Manager!(Message);
 
+	// create two new queues
 	Result!(Queue!(Message)*, string) q1_r = m.newQueue();
 	Result!(Queue!(Message)*, string) q2_r = m.newQueue();
 
 	assert(q1_r.is_okay());
 	assert(q2_r.is_okay());
-
 	auto q1 = q1_r.ok();
 	auto q2 = q2_r.ok();
+
+	// enqueue two messages, one per queue, then read them off
+	//
+	// we won't block as the messages are already arrived
 	Message m1_in = Message("First message");
 	Message m2_in = Message("Second message");
 	assert(q1.receive(m1_in)); // should not be rejected
