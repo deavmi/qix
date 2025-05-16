@@ -43,3 +43,7 @@ jobs:
         # In this mode, `mainSourceFile` is excluded and `version (unittest)` are included
         # See https://dub.pm/package-format-json.html#configurations
         dub test --compiler=$DC --coverage
+
+    - name: Coverage upload
+      run: |
+          dub run doveralls -- -t ${{secrets.COVERALLS_REPO_TOKEN}}
