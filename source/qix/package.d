@@ -1,6 +1,4 @@
 /**
- * Qix 
- *
  * Simple waitable-queue management
  *
  * Authors: Tristan Brice Velloza Kildaire (deavmi)
