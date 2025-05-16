@@ -7,7 +7,7 @@
 		"gogga": ">=3.2.0",
 		"niknaks": ">=0.25.1"
 	},
-	"description": "Request/response framework",
+	"description": "Simple waitable-queue management",
 	"license": "LGPL-2.0-only",
 	"name": "qix",
 	"targetType": "library",
