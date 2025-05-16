@@ -3,7 +3,7 @@
 # Qix
 ### Simple waitable-queue management
 
-<p>CI badge here</p><p>DUB badge here</p>
+[![D](https://github.com/deavmi/qix/actions/workflows/d.yml/badge.svg)](https://github.com/deavmi/qix/actions/workflows/d.yml)
 
 ---
 
