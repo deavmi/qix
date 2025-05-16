@@ -1,3 +1,8 @@
+/** 
+ * Definitions for queues
+ *
+ * Authors: Tristan Brice Velloza Kildaire (deavmi)
+ */
 module qix.queue;
 
 public alias QueueKey = size_t;
@@ -8,11 +13,38 @@ import std.datetime : Duration;
 
 import gogga.mixins;
 
+/** 
+ * Admittance policy
+ *
+ * A delegate that takes in an `Item`
+ * and returns `true` if it should be
+ * admitted to the queue, `false`
+ * otherwise
+ */
 public alias AdmitPolicy(Item) = bool delegate(Item);
 
+/** 
+ * Timeout exception thrown when
+ * a time-based wait times-out
+ */
+public final class TimeoutException : Exception
+{
+	private this()
+	{
+		super("Timeout after waiting");
+	}
+}
+
+/** 
+ * Queue type
+ */
 public template Queue(Item)
 {
 	private alias AP = AdmitPolicy!(Item);
+
+	/** 
+	 * Queue type
+	 */
 	public struct Queue
 	{
 		private QueueKey _id;
@@ -38,6 +70,11 @@ public template Queue(Item)
 			this(id, null);
 		}
 
+		/** 
+		 * Returns this queue's id
+		 *
+		 * Returns: the id
+		 */
 		public QueueKey id()
 		{
 			return this._id;
@@ -52,6 +89,20 @@ public template Queue(Item)
 			return s;
 		}
 
+		/** 
+		 * Places an item into this queue and
+		 * wakes up one of the waiter(s)
+		 *
+		 * The item is only enqueued if
+		 * there is an admittance policy
+		 * associated with this queue, and
+		 * if so, if it evaluates to `true`.
+		 *
+		 * Params:
+		 *   i = the item to attempt to enqueue
+		 * Returns: `true` if enqueued, `false`
+		 * otherwise
+		 */
 		public bool receive(Item i)
 		{
 			// lock, apply filter delegate (if any), insert (if so), unlock
@@ -78,11 +129,33 @@ public template Queue(Item)
 			return true;
 		}
 
+		/** 
+		 * Blocks until an item is available
+		 * for dequeuing.
+		 *
+		 * This is akin to calling `wait(Duration)`
+		 * with `Duration.zero`.
+		 *
+		 * Returns: the item
+		 */
 		public Item wait()
 		{
 			return wait(Duration.zero());
 		}
 
+		/** 
+		 * Blocks up until the timeout for an
+		 * item to become available for dequeuing.
+		 *
+		 * However, if the timeout is reached
+		 * then an exception is thrown.
+		 *
+		 * Params:
+		 *   timeout = the timeout
+		 * Throws: `TimeoutException` if the
+		 * timeout is reached
+		 * Returns: the dequeued item
+		 */
 		public Item wait(Duration timeout)
 		{
 			this._l.lock();
@@ -120,7 +193,7 @@ public template Queue(Item)
 				if(!in_time)
 				{
 					// todo: throw exception here
-					throw new Exception("Timeout after waiting"); // todo: log time taken
+					throw new TimeoutException(); // todo: log time taken
 				}
 			}
 			
@@ -141,7 +214,12 @@ public template Queue(Item)
 			return i;
 		}
 
-		// items in queue
+		/** 
+		 * Returns the number of items
+		 * in the queue
+		 *
+		 * Returns: the count
+		 */
 		public size_t size()
 		{
 			this._l.lock();
@@ -155,6 +233,12 @@ public template Queue(Item)
 			return walkLength(this._q[]);
 		}
 
+		/** 
+		 * Returns a string representation
+		 * of this queue
+		 *
+		 * Returns: a string
+		 */
 		public string toString()
 		{
 			import std.string : format;
@@ -245,9 +329,13 @@ unittest
 		q.wait(dur!("seconds")(1));
 		assert(false);
 	}
+	catch(TimeoutException e)
+	{
+		assert(true);
+	}
 	catch(Exception e)
 	{
-		assert(e.msg == "Timeout after waiting");
+		assert(false);
 	}
 	
 }
