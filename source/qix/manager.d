@@ -102,7 +102,7 @@ public template Manager(Item)
 
 		public bool removeQueue(QueueType* queue)
 		{
-			return removeQueue(queue.id());
+			return queue is null ? false : removeQueue(queue.id());
 		}
 
 		public bool removeQueue(QueueKey key)
