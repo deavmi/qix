@@ -16,6 +16,16 @@ static this()
 	r_tls = rndGen();
 }
 
+/** 
+ * Generates a random number
+ * within the `size_t` range.
+ *
+ * This uses a random number
+ * generator that is unique
+ * to the calling thread (TLS).
+ *
+ * Returns: a random number
+ */
 package size_t rand()
 {
 	alias r = r_tls;
