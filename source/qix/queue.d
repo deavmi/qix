@@ -14,6 +14,7 @@ public alias QueueKey = size_t;
 import core.sync.mutex : Mutex;
 import core.sync.condition : Condition;
 import std.datetime : Duration;
+import qix.exceptions;
 
 import gogga.mixins;
 
@@ -31,7 +32,7 @@ public alias AdmitPolicy(Item) = bool delegate(Item);
  * Timeout exception thrown when
  * a time-based wait times-out
  */
-public final class TimeoutException : Exception
+public final class TimeoutException : QixException
 {
 	private this()
 	{
