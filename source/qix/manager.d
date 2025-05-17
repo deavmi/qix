@@ -181,6 +181,57 @@ public template Manager(Item)
 			this._q.remove(key);
 			return true;
 		}
+
+		private QueueType* getQueue0(QueueKey id)
+		{
+			this._ql.lock();
+
+			scope(exit)
+			{
+				this._ql.unlock();
+			}
+
+			return id in this._q;
+		}
+
+		private Result!(QueueType*, string) getQueue(QueueKey id)
+		{
+			auto q = getQueue0(id);
+			if(q is null)
+			{
+				return error!(string, QueueType*)
+				(
+					format
+					(
+						"Could not find a queue with id %d",
+						id
+					)
+				);
+			}
+
+			return ok!(QueueType*, string)(q);
+		}
+
+		// TODO: In future version let's add:
+		//
+		// 2. receive(QueueKey, T)
+		// 4. wait(QueueKey)
+		// 6. wait(QueueKey, Duration)
+		//
+
+		public Result!(bool, string) receive(QueueKey id, Item item)
+		{
+			auto q_r = getQueue(id);
+			if(!q_r)
+			{
+				return error!(string, bool)(q_r.error());
+			}
+
+			auto q = q_r.ok();
+			return ok!(bool, string)(q.receive(item));
+		}
+
+		
 	}
 }
 
@@ -222,7 +273,7 @@ unittest
 	// we won't block as the messages are already arrived
 	Message m1_in = Message("First message");
 	Message m2_in = Message("Second message");
-	assert(q1.receive(m1_in)); // should not be rejected
+	assert(m.receive(q1.id(), m1_in)); // should not be rejected
 	assert(q2.receive(m2_in)); // should not be rejected
 	assert(q1.wait() == m1_in); // should be the same message we sent in
 	assert(q2.wait() == m2_in); // should be the same message we sent in
