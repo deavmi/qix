@@ -17,6 +17,16 @@ import gogga.mixins;
  */
 private enum NEWQUEUE_MAX_ITER = 1000;
 
+import qix.exceptions;
+
+public final class ManagerException : QixException
+{
+	private this(string m)
+	{
+		super(m);
+	}
+}
+
 /** 
  * A queue manager
  */
@@ -194,22 +204,25 @@ public template Manager(Item)
 			return id in this._q;
 		}
 
-		private Result!(QueueType*, string) getQueue(QueueKey id)
+		private Result!(QueueType*, QixException) getQueue(QueueKey id)
 		{
 			auto q = getQueue0(id);
 			if(q is null)
 			{
-				return error!(string, QueueType*)
+				return error!(QixException, QueueType*)
 				(
-					format
+					new ManagerException
 					(
-						"Could not find a queue with id %d",
-						id
+						format
+						(
+							"Could not find a queue with id %d",
+							id
+						)
 					)
 				);
 			}
 
-			return ok!(QueueType*, string)(q);
+			return ok!(QueueType*, QixException)(q);
 		}
 
 		// TODO: In future version let's add:
@@ -219,19 +232,48 @@ public template Manager(Item)
 		// 6. wait(QueueKey, Duration)
 		//
 
-		public Result!(bool, string) receive(QueueKey id, Item item)
+		public Result!(bool, QixException) receive(QueueKey id, Item item)
 		{
 			auto q_r = getQueue(id);
 			if(!q_r)
 			{
-				return error!(string, bool)(q_r.error());
+				return error!(QixException, bool)(q_r.error());
 			}
 
 			auto q = q_r.ok();
-			return ok!(bool, string)(q.receive(item));
+			return ok!(bool, QixException)(q.receive(item));
 		}
 
-		
+		public Result!(Item, QixException) wait(QueueKey id)
+		{
+			return wait(id, Duration.zero);
+		}
+
+		// TODO: This can throw, we need to go fully nothrow
+		import std.datetime : Duration;
+		public Result!(Item, QixException) wait(QueueKey id, Duration timeout)
+		{
+			auto q_r = getQueue(id);
+			if(!q_r)
+			{
+				return error!(QixException, Item)(q_r.error());
+			}
+
+
+			auto q = q_r.ok();
+			// import
+			try
+			{
+				auto i = q.wait(timeout);
+				pragma(msg, Item);
+				return ok!(Item, QixException)(i);
+			}
+			// TODO: Remove catch and make Queue use only Result types
+			catch(TimeoutException e)
+			{
+				return error!(QixException, Item)(e);
+			}
+		}
 	}
 }
 
@@ -253,7 +295,7 @@ unittest
 	} 
 	
 	// queue manager for queues that hold messages
-	auto m = new Manager!(Message);
+	auto m = new Manager!(Message)();
 
 	// no queues present
 	assert(m.removeQueue(0) == false);
@@ -273,8 +315,8 @@ unittest
 	// we won't block as the messages are already arrived
 	Message m1_in = Message("First message");
 	Message m2_in = Message("Second message");
-	assert(m.receive(q1.id(), m1_in)); // should not be rejected
-	assert(q2.receive(m2_in)); // should not be rejected
+	assert(m.receive(q1.id(), m1_in)); // (indirect usage via manager) should not be rejected
+	assert(q2.receive(m2_in)); // (direct usage via queue itself) should not be rejected
 	assert(q1.wait() == m1_in); // should be the same message we sent in
 	assert(q2.wait() == m2_in); // should be the same message we sent in
 
