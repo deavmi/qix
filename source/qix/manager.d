@@ -259,20 +259,8 @@ public template Manager(Item)
 				return error!(QixException, Item)(q_r.error());
 			}
 
-
 			auto q = q_r.ok();
-			// import
-			try
-			{
-				auto i = q.wait(timeout);
-				pragma(msg, Item);
-				return ok!(Item, QixException)(i);
-			}
-			// TODO: Remove catch and make Queue use only Result types
-			catch(TimeoutException e)
-			{
-				return error!(QixException, Item)(e);
-			}
+			return q.wait(timeout);
 		}
 	}
 }
