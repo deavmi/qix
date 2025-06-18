@@ -15,6 +15,7 @@ import core.sync.mutex : Mutex;
 import core.sync.condition : Condition;
 import std.datetime : Duration;
 import qix.exceptions;
+import niknaks.functional : Result, ok, error;
 
 import gogga.mixins;
 
@@ -161,7 +162,12 @@ public template Queue(Item)
 		 */
 		public Item wait()
 		{
-			return wait(Duration.zero());
+			auto res = wait(Duration.zero());
+			//sanity: only way an error is if timed out
+			// but that should not be possible with
+			// a timeout of 0
+			assert(res.is_okay()); 
+			return res.ok();
 		}
 
 		/** 
@@ -169,15 +175,16 @@ public template Queue(Item)
 		 * item to become available for dequeuing.
 		 *
 		 * However, if the timeout is reached
-		 * then an exception is thrown.
+		 * then an exception is returned.
 		 *
 		 * Params:
 		 *   timeout = the timeout
-		 * Throws: `TimeoutException` if the
-		 * timeout is reached
-		 * Returns: the dequeued item
+		 * 
+		 * Returns: a `Result` containing the
+		 * the dequeued item or a `TimeoutException`
+		 * if the timeout was exceeded
 		 */
-		public Item wait(Duration timeout)
+		public Result!(Item, TimeoutException) wait(Duration timeout)
 		{
 			this._l.lock();
 
@@ -193,7 +200,7 @@ public template Queue(Item)
 			if(early_return)
 			{
 				DEBUG("early return");
-				return pop();
+				return ok!(Item, TimeoutException)(pop());
 			}
 
 			// then no timeout
@@ -214,12 +221,12 @@ public template Queue(Item)
 				if(!in_time)
 				{
 					// todo: throw exception here
-					throw new TimeoutException(); // todo: log time taken
+					return error!(TimeoutException, Item)(new TimeoutException()); // todo: log time taken
 				}
 			}
 			
 			// pop single item off
-			return pop();
+			return ok!(Item, TimeoutException)(pop());
 		}
 
 		// mt: assumes lock held
