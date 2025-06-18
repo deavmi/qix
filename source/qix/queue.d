@@ -15,6 +15,7 @@ import core.sync.mutex : Mutex;
 import core.sync.condition : Condition;
 import std.datetime : Duration;
 import qix.exceptions;
+import niknaks.functional : Result, ok, error;
 
 import gogga.mixins;
 
@@ -71,7 +72,7 @@ public template Queue(Item)
 		 *   id = the id
 		 *   ap = admittance policy
 		 */
-		package this(QueueKey id, AP ap)
+		package this(QueueKey id, AP ap) @safe
 		{
 			this._id = id;
 			this._l = new Mutex();
@@ -86,7 +87,7 @@ public template Queue(Item)
 		 * Params:
 		 *   id = the id
 		 */
-		package this(QueueKey id)
+		package this(QueueKey id) @safe
 		{
 			this(id, null);
 		}
@@ -96,7 +97,7 @@ public template Queue(Item)
 		 *
 		 * Returns: the id
 		 */
-		public QueueKey id()
+		public QueueKey id() @safe
 		{
 			return this._id;
 		}
@@ -161,7 +162,12 @@ public template Queue(Item)
 		 */
 		public Item wait()
 		{
-			return wait(Duration.zero());
+			auto res = wait(Duration.zero());
+			//sanity: only way an error is if timed out
+			// but that should not be possible with
+			// a timeout of 0
+			assert(res.is_okay()); 
+			return res.ok();
 		}
 
 		/** 
@@ -169,15 +175,16 @@ public template Queue(Item)
 		 * item to become available for dequeuing.
 		 *
 		 * However, if the timeout is reached
-		 * then an exception is thrown.
+		 * then an exception is returned.
 		 *
 		 * Params:
 		 *   timeout = the timeout
-		 * Throws: `TimeoutException` if the
-		 * timeout is reached
-		 * Returns: the dequeued item
+		 * 
+		 * Returns: a `Result` containing the
+		 * the dequeued item or a `QixException`
+		 * if the timeout was exceeded
 		 */
-		public Item wait(Duration timeout)
+		public Result!(Item, QixException) wait(Duration timeout)
 		{
 			this._l.lock();
 
@@ -193,7 +200,7 @@ public template Queue(Item)
 			if(early_return)
 			{
 				DEBUG("early return");
-				return pop();
+				return ok!(Item, QixException)(pop());
 			}
 
 			// then no timeout
@@ -213,13 +220,12 @@ public template Queue(Item)
 
 				if(!in_time)
 				{
-					// todo: throw exception here
-					throw new TimeoutException(); // todo: log time taken
+					return error!(QixException, Item)(new TimeoutException()); // todo: log time taken
 				}
 			}
 			
 			// pop single item off
-			return pop();
+			return ok!(Item, QixException)(pop());
 		}
 
 		// mt: assumes lock held
@@ -241,7 +247,7 @@ public template Queue(Item)
 		 *
 		 * Returns: the count
 		 */
-		public size_t size()
+		public size_t size() // TODO: Make safe justd ebug that is bad
 		{
 			this._l.lock();
 			
@@ -345,20 +351,9 @@ unittest
 
 	// wait with timeout and knowing nothing will
 	// be enqueued
-	try
-	{
-		q.wait(dur!("seconds")(1));
-		assert(false);
-	}
-	catch(TimeoutException e)
-	{
-		assert(true);
-	}
-	catch(Exception e)
-	{
-		assert(false);
-	}
-	
+	auto res = q.wait(dur!("seconds")(1));
+	assert(res.is_error());
+	assert(cast(TimeoutException)res.error());
 }
 
 // test admit policy
