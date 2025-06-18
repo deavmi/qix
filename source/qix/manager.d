@@ -249,7 +249,6 @@ public template Manager(Item)
 			return wait(id, Duration.zero);
 		}
 
-		// TODO: This can throw, we need to go fully nothrow
 		import std.datetime : Duration;
 		public Result!(Item, QixException) wait(QueueKey id, Duration timeout)
 		{
