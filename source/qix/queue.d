@@ -181,10 +181,10 @@ public template Queue(Item)
 		 *   timeout = the timeout
 		 * 
 		 * Returns: a `Result` containing the
-		 * the dequeued item or a `TimeoutException`
+		 * the dequeued item or a `QixException`
 		 * if the timeout was exceeded
 		 */
-		public Result!(Item, TimeoutException) wait(Duration timeout)
+		public Result!(Item, QixException) wait(Duration timeout)
 		{
 			this._l.lock();
 
@@ -200,7 +200,7 @@ public template Queue(Item)
 			if(early_return)
 			{
 				DEBUG("early return");
-				return ok!(Item, TimeoutException)(pop());
+				return ok!(Item, QixException)(pop());
 			}
 
 			// then no timeout
@@ -221,12 +221,12 @@ public template Queue(Item)
 				if(!in_time)
 				{
 					// todo: throw exception here
-					return error!(TimeoutException, Item)(new TimeoutException()); // todo: log time taken
+					return error!(QixException, Item)(new TimeoutException()); // todo: log time taken
 				}
 			}
 			
 			// pop single item off
-			return ok!(Item, TimeoutException)(pop());
+			return ok!(Item, QixException)(pop());
 		}
 
 		// mt: assumes lock held
@@ -352,20 +352,9 @@ unittest
 
 	// wait with timeout and knowing nothing will
 	// be enqueued
-	try
-	{
-		q.wait(dur!("seconds")(1));
-		assert(false);
-	}
-	catch(TimeoutException e)
-	{
-		assert(true);
-	}
-	catch(Exception e)
-	{
-		assert(false);
-	}
-	
+	auto res = q.wait(dur!("seconds")(1));
+	assert(res.is_error());
+	assert(cast(TimeoutException)res.error());
 }
 
 // test admit policy
