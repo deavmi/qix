@@ -72,7 +72,7 @@ public template Queue(Item)
 		 *   id = the id
 		 *   ap = admittance policy
 		 */
-		package this(QueueKey id, AP ap)
+		package this(QueueKey id, AP ap) @safe
 		{
 			this._id = id;
 			this._l = new Mutex();
@@ -87,7 +87,7 @@ public template Queue(Item)
 		 * Params:
 		 *   id = the id
 		 */
-		package this(QueueKey id)
+		package this(QueueKey id) @safe
 		{
 			this(id, null);
 		}
@@ -97,7 +97,7 @@ public template Queue(Item)
 		 *
 		 * Returns: the id
 		 */
-		public QueueKey id()
+		public QueueKey id() @safe
 		{
 			return this._id;
 		}
@@ -247,7 +247,7 @@ public template Queue(Item)
 		 *
 		 * Returns: the count
 		 */
-		public size_t size()
+		public size_t size() // TODO: Make safe justd ebug that is bad
 		{
 			this._l.lock();
 			
