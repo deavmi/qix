@@ -220,7 +220,6 @@ public template Queue(Item)
 
 				if(!in_time)
 				{
-					// todo: throw exception here
 					return error!(QixException, Item)(new TimeoutException()); // todo: log time taken
 				}
 			}
