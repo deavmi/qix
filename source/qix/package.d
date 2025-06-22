@@ -14,3 +14,8 @@ public import qix.queue;
  * Queue management
  */
 public import qix.manager;
+
+/**
+ * Exception types
+ */
+public import qix.exceptions;
