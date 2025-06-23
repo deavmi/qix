@@ -244,12 +244,42 @@ public template Manager(Item)
 			return ok!(bool, QixException)(q.receive(item));
 		}
 
+		/** 
+		 * Wait indefinately to dequeue an item
+		 * from the queue given by the provided
+		 * id
+		 *
+		 * Params:
+		 *   id = the queue's id
+		 * Returns: a `Result` either containing
+		 * the dequeued item or a `QixException`
+		 * if the id does not refer to a queue
+		 * registered with this manager
+		 */
 		public Result!(Item, QixException) wait(QueueKey id)
 		{
 			return wait(id, Duration.zero);
 		}
 
 		import std.datetime : Duration;
+
+		/** 
+		 * Wait up until a specified maximum
+		 * amount of time to dequeue an item
+		 * from the queue given by the provided
+		 * id
+		 *
+		 * Params:
+		 *   id = the queue's id
+		 *   timeout = the maximum time to wait
+		 * whilst blocking/waiting to dequeue
+		 * an item from the queue
+		 * Returns: a `Result` either containing
+		 * the dequeued item or a `QixException`
+		 * if the id does not refer to a queue
+		 * registered with this manager or the
+		 * timeout was exceeded
+		 */
 		public Result!(Item, QixException) wait(QueueKey id, Duration timeout)
 		{
 			auto q_r = getQueue(id);
