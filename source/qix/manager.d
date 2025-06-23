@@ -19,6 +19,10 @@ private enum NEWQUEUE_MAX_ITER = 1000;
 
 import qix.exceptions;
 
+/** 
+ * An exception that occurs during
+ * usage of the `Manager`
+ */
 public final class ManagerException : QixException
 {
 	private this(string m)
