@@ -51,6 +51,10 @@ assert(q1.wait() == m1_in); // should be the same message we sent in
 assert(q2.wait() == m2_in); // should be the same message we sent in
 ```
 
+A more sensible _threaded_ example can be found [here](https://deavmi.assigned.network/blog/qix/).
+
+## Docs
+
 You can also take a look at the [API documentation](https://qix.dpldocs.info/qix.html).
 
 ## License
