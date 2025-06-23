@@ -232,6 +232,21 @@ public template Manager(Item)
 		// 6. wait(QueueKey, Duration)
 		//
 
+		/** 
+		 * Pushes a new message into the queue,
+		 * waking up one of the threads currently
+		 * blocking to dequeue an item from it
+		 *
+		 * Params:
+		 *   id = the queue's id
+		 *   item = the item to enqueue
+		 * Returns: a `Result` either containing
+		 * a boolean flag about whether the admit
+		 * policy allowed the enqueueing to occur
+		 * or a `QixException` if the id does not
+		 * refer to a queue registered with this
+		 * manager
+		 */
 		public Result!(bool, QixException) receive(QueueKey id, Item item)
 		{
 			auto q_r = getQueue(id);
